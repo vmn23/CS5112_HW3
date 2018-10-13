@@ -23,6 +23,7 @@ class HuffmanTree:
     assert(len(symbol_list) >= 2)
 
     self.root = None # (place TreeNode object here)
+    self.encoding = {}
 
     # Convert all symbols into TreeNode leaves in list
     nodeList = []
@@ -43,11 +44,21 @@ class HuffmanTree:
     # When len == 1, set self.root to that variable
     self.root = nodeList[0]
 
+    # Create encoding dict
+    self.createDict("", self.root)
+
+
   # Encodes a string of characters into a string of bits using the
   # symbol/weight list provided.
   def encode(self, s):
     assert(s is not None)
-    # YOUR CODE HERE
+    
+    # Encode each character separately
+    outputString = ""
+    for i in s:
+      outputString = outputString + self.encoding[i]
+
+    return outputString
 
   # Decodes a string of bits into a string of characters using the
   # symbol/weight list provided.
@@ -79,3 +90,12 @@ class HuffmanTree:
     return self.TreeNode(left = nLeft, right = nRight, 
       weight = nLeft.weight+nRight.weight, 
       min_element=min(nLeft.min_element,nRight.min_element))
+
+  def createDict(self, string, node):
+    if node == None:
+      return
+    if node.symbol != None:
+      self.encoding[node.symbol] = string
+      return
+    self.createDict(string+"0", node.left)
+    self.createDict(string+"1", node.right)
