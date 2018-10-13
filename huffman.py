@@ -1,13 +1,13 @@
+###########################################################################
+# CS 5112 HW 3 - Huffman and Boyer-Moore
+# Authors: Sungseo Park and Varun Narayan
+# Python 2.7
+# Date: 10/13/18
+###########################################################################
 from operator import attrgetter
-# Represents a Huffman tree for use in encoding/decoding strings.
-# A sample usage is as follows:
-#
-# h = HuffmanTree([('A', 2), ('B', 7), ('C', 1)])
-# assert(h.encode('ABC') == '01100')
-# assert(h.decode(h.encode('ABC')) == 'ABC')
+
 class HuffmanTree:
-  # Helper object for building the Huffman tree.
-  # You may modify this constructor but the grading script relies on the left, right, and symbol fields.
+  # Inner class to help build the tree
   class TreeNode:
     def __init__ (self, left = None, right = None, symbol = None, min_element = None, weight = None):
       self.left = left
@@ -16,7 +16,7 @@ class HuffmanTree:
       self.min_element = min_element
       self.weight = weight
 
-  # The`symbol_list` argument should be a list of tuples `(symbol, weight)`,
+  # The`symbol_list` argument is a list of tuples `(symbol, weight)`,
   # where `symbol` is a symbol that can be encoded, and `weight` is the
   # the unnormalized probabilitiy of that symbol appearing.
   def __init__(self, symbol_list):
@@ -28,12 +28,12 @@ class HuffmanTree:
     # Convert all symbols into TreeNode leaves in list
     nodeList = []
     for sym, w in symbol_list:
-      nodeList.append(self.TreeNode(symbol = sym, min_element=sym, weight=w))
+      nodeList.append(self.TreeNode(symbol = sym, min_element = sym, weight = w))
 
     # While the lists length is > 1
     while len(nodeList) > 1:
     # Take out lowest two weighted objects and combine
-      nodeList = sorted(nodeList,key=attrgetter('weight','min_element'))
+      nodeList = sorted(nodeList, key = attrgetter('weight','min_element'))
       smallNodes = nodeList[:2]
       newNode = self.combineSubTrees(smallNodes[0],smallNodes[1])
       
@@ -52,11 +52,10 @@ class HuffmanTree:
   # symbol/weight list provided.
   def encode(self, s):
     assert(s is not None)
-    
     # Encode each character separately
     outputString = ""
     for i in s:
-      outputString = outputString + self.encoding[i]
+      outputString += self.encoding[i]
 
     return outputString
 
@@ -88,14 +87,17 @@ class HuffmanTree:
   # Pass in TreeNodes, pass in so nodes are ordered
   def combineSubTrees(self, nLeft, nRight):
     return self.TreeNode(left = nLeft, right = nRight, 
-      weight = nLeft.weight+nRight.weight, 
+      weight = nLeft.weight + nRight.weight, 
       min_element=min(nLeft.min_element,nRight.min_element))
 
+  # Recursively pass through the tree and construct the encoding dict
   def createDict(self, string, node):
     if node == None:
       return
+
     if node.symbol != None:
       self.encoding[node.symbol] = string
       return
-    self.createDict(string+"0", node.left)
-    self.createDict(string+"1", node.right)
+
+    self.createDict(string + "0", node.left)
+    self.createDict(string + "1", node.right)
